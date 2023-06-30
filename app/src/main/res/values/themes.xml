@@ -1,0 +1,43 @@
+<resources>
+    <style name="Theme.ToDoApp" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+
+        <item name="colorPrimary">@color/blue</item>
+        <item name="colorPrimaryVariant">@color/back</item>
+        <item name="colorOnPrimary">@color/back</item>
+
+        <item name="colorSecondary">@color/blue</item>
+        <item name="colorSecondaryVariant">@color/white</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:statusBarColor">?attr/colorOnPrimary</item>
+
+        <item name="support_separator">@color/graySeparator</item>
+        <item name="support_overlay">@color/grayOverlay</item>
+
+        <item name="label_primary">@color/black</item>
+        <item name="label_secondary">@color/graySecondary</item>
+        <item name="label_tertiary">@color/grayTertiary</item>
+        <item name="label_disable">@color/grayDisable</item>
+
+        <item name="color_red">@color/red</item>
+        <item name="color_green">@color/green</item>
+        <item name="color_blue">@color/blue</item>
+        <item name="color_gray">@color/gray</item>
+        <item name="color_gray_light">@color/grayLight</item>
+        <item name="color_white">@color/white</item>
+        <item name="color_pink">@color/pink</item>
+
+        <item name="back_primary">@color/back</item>
+        <item name="back_secondary">@color/backSecondary</item>
+        <item name="back_elevated">@color/white</item>
+
+        <item name="check">@drawable/check</item>
+    </style>
+
+    <style name="Theme.ToDoApp.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.ToDoApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.ToDoApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+</resources>

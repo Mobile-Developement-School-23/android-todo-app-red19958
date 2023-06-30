@@ -1,0 +1,42 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.ToDoApp" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+
+        <item name="colorPrimary">@color/dark_blue</item>
+        <item name="colorPrimaryVariant">@color/dark_back_primary</item>
+        <item name="colorOnPrimary">@color/dark_back_primary</item>
+        <item name="colorSecondary">@color/dark_blue</item>
+        <item name="colorSecondaryVariant">@color/white</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:statusBarColor">?attr/colorOnPrimary</item>
+
+        <item name="support_separator">@color/dark_separator</item>
+        <item name="support_overlay">@color/dark_overlay</item>
+
+        <item name="label_primary">@color/white</item>
+        <item name="label_secondary">@color/dark_secondary</item>
+        <item name="label_tertiary">@color/dark_tertiary</item>
+        <item name="label_disable">@color/dark_disable</item>
+
+        <item name="color_red">@color/dark_red</item>
+        <item name="color_green">@color/dark_green</item>
+        <item name="color_blue">@color/dark_blue</item>
+        <item name="color_gray">@color/gray</item>
+        <item name="color_gray_light">@color/dark_gray_light</item>
+        <item name="color_white">@color/white</item>
+        <item name="color_pink">@color/dark_pink</item>
+
+        <item name="back_primary">@color/dark_back_primary</item>
+        <item name="back_secondary">@color/dark_back_secondary</item>
+        <item name="back_elevated">@color/dark_back_elevated</item>
+
+        <item name="check">@drawable/check_black</item>
+    </style>
+
+    <style name="Theme.ToDoApp.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.ToDoApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.ToDoApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+</resources>

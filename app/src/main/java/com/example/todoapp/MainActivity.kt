@@ -17,14 +17,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var bundle: Bundle? = null
-    lateinit var connectivityManager: ConnectivityManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         binding = ActivityMainBinding.inflate(layoutInflater)
-
-
         setContentView(binding.root)
         lifecycle.coroutineScope.launch {
             withContext(Dispatchers.IO) {

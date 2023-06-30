@@ -1,5 +1,6 @@
 package com.example.todoapp.fragments
 
+import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
@@ -73,9 +74,11 @@ class TodoItemsFragment : Fragment() {
     private val repo = TodoItemsRepository()
     private var itemsList = repo.get()
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
-
+    lateinit var connectivityManager: ConnectivityManager
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
         networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
@@ -86,7 +89,7 @@ class TodoItemsFragment : Fragment() {
 
         val networkRequest = NetworkRequest.Builder().build()
 
-        (requireActivity() as MainActivity).connectivityManager.registerNetworkCallback(
+        connectivityManager.registerNetworkCallback(
             networkRequest,
             networkCallback
         )
@@ -100,7 +103,7 @@ class TodoItemsFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        (requireActivity() as MainActivity).connectivityManager.unregisterNetworkCallback(networkCallback)
+        connectivityManager.unregisterNetworkCallback(networkCallback)
     }
 
 

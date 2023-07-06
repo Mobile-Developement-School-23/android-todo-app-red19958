@@ -12,12 +12,11 @@
         android:layout_height="25dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
+        android:backgroundTint="?attr/label_primary"
         android:contentDescription="@string/cross"
         android:src="@drawable/cross"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:backgroundTint="?attr/label_primary"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/save"
@@ -32,6 +31,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <androidx.cardview.widget.CardView
         android:id="@+id/card_view_edit_text"
         android:layout_width="match_parent"
@@ -39,8 +39,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="29dp"
         android:layout_marginEnd="16dp"
-        android:minHeight="150dp"
-        android:maxHeight="300dp"
         app:cardCornerRadius="10dp"
         app:cardElevation="6dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -56,15 +54,15 @@
             android:hint="@string/what_to_do"
             android:importantForAutofill="no"
             android:inputType="textMultiLine"
-            android:minHeight="150dp"
-            android:maxHeight="300dp"
+            android:maxLines="10"
+            android:minLines="3"
             android:paddingStart="16dp"
             android:paddingTop="16dp"
             android:paddingEnd="16dp"
             android:paddingBottom="16dp"
             android:textColor="?attr/label_primary"
-            android:textSize="16sp"
-            android:textColorHint="?attr/label_tertiary"/>
+            android:textColorHint="?attr/label_tertiary"
+            android:textSize="16sp" />
     </androidx.cardview.widget.CardView>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -24,6 +24,17 @@
     <string name="delete">Удалить</string>
     <string name="warn">!!</string>
     <string name="trash">trash</string>
+    <string name="edit">Изменить</string>
+    <string name="successfully_removed">Удалено</string>
+    <string name="undo">Отменить</string>
+    <string name="bad_internet_connection">"Плохое интернет соединение, попробуйте позже"</string>
+    <string name="no_internet_connection">"Нет интернет соединения"</string>
+    <string name="item_not_found">"Дело было удалено, попытка сохранить"</string>
+    <string name="item_saved">"Дело успешно сохранено"</string>\
+    <string name="item_not_saved">"Дело не было сохранено, попробуйте позже…"</string>
+    <string name="new_item">"Были полученные новые данные, производится замена"</string>
+    <string name="can_not_delete">"Не удалось удалить элемент"</string>
+    <string name="retry">"Повторить"</string>
     <string-array name="importances">
         <item>Низкий</item>
         <item>Нет</item>

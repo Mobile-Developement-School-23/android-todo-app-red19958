@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.todoapp.MyApp
 import com.example.todoapp.R
 import com.example.todoapp.adapters.util.ItemTouchHelperAdapter
 import com.example.todoapp.adapters.util.MyDiffUtilCallback
@@ -16,8 +15,6 @@ import com.example.todoapp.data.Importance
 import com.example.todoapp.data.TodoItem
 import com.example.todoapp.data.TodoItemsRepository
 import com.example.todoapp.databinding.TodoItemBinding
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 import java.time.format.DateTimeFormatter

@@ -3,7 +3,6 @@ package com.example.todoapp.fragments.util
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import com.example.todoapp.MyApp
 import javax.inject.Inject
 
 class Util @Inject constructor(private val context: Context) {

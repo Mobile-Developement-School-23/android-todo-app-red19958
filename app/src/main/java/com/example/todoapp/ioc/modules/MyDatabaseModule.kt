@@ -8,7 +8,6 @@ import com.example.todoapp.fragments.util.Const.DATABASE_NAME
 import com.example.todoapp.ioc.scopes.MyDatabaseModuleScope
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
 
 @Module
 class MyDatabaseModule {

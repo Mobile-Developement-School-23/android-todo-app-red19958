@@ -1,8 +1,6 @@
 package com.example.todoapp
 
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.todoapp.databinding.ActivityMainBinding
 

@@ -5,13 +5,10 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.todoapp.MyApp
 import com.example.todoapp.data.TodoItem
 import com.example.todoapp.data.TodoItemsRepository
 import com.example.todoapp.ioc.util.MutableString
 import com.example.todoapp.network.APIService
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext

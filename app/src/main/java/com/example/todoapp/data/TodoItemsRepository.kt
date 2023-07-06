@@ -1,6 +1,5 @@
 package com.example.todoapp.data
 
-import com.example.todoapp.MyApp
 import com.example.todoapp.fragments.util.Const.ZERO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope

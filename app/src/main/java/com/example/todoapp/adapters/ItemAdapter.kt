@@ -1,22 +1,40 @@
-package com.example.todoapp
+package com.example.todoapp.adapters
 
+import android.content.Context
 import android.graphics.Paint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.todoapp.MyApp
+import com.example.todoapp.R
+import com.example.todoapp.adapters.util.ItemTouchHelperAdapter
+import com.example.todoapp.adapters.util.MyDiffUtilCallback
+import com.example.todoapp.data.Importance
+import com.example.todoapp.data.TodoItem
+import com.example.todoapp.data.TodoItemsRepository
 import com.example.todoapp.databinding.TodoItemBinding
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.internal.synchronized
+import java.time.format.DateTimeFormatter
 import java.util.*
 
+
 class ItemAdapter(
-    private val items: MutableList<TodoItem>,
     private val changeColor: (Int) -> Int,
     private val changeCount: (Int) -> Unit,
+    private val context: Context,
+    private val tryToDelete: (TodoItem) -> Unit,
+    private val tryToChange: (TodoItem) -> Unit,
+    private val replaceItemDone: (Boolean, String) -> Unit,
+    private val removeItem: (TodoItem) -> Unit,
+    private val repository: TodoItemsRepository,
     private val onClick: (TodoItem) -> Unit
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>(), ItemTouchHelperAdapter {
-    private val repository = TodoItemsRepository()
     private val copyItems = arrayListOf<TodoItem>()
     private val adapter = this
 
@@ -25,7 +43,15 @@ class ItemAdapter(
         newList = repository.get()
     )
 
-    init {
+    fun updateData() {
+        val diffResult = DiffUtil.calculateDiff(callback)
+        diffResult.dispatchUpdatesTo(adapter)
+    }
+
+    @OptIn(InternalCoroutinesApi::class)
+    fun copyList() {
+        val items = repository.get()
+
         for (i in items.indices) {
             val id = items[i].id
             val text = items[i].text
@@ -35,18 +61,25 @@ class ItemAdapter(
             val deadline = items[i].deadline
             val dateOfChanges = items[i].dateOfChanges
 
-            copyItems.add(
-                TodoItem(
-                    id = id,
-                    text = text,
-                    importance = importance,
-                    done = done,
-                    dateOfCreation = dateOfCreation,
-                    deadline = deadline,
-                    dateOfChanges = dateOfChanges
-                )
+            val item = TodoItem(
+                id = id,
+                text = text,
+                importance = importance,
+                done = done,
+                dateOfCreation = dateOfCreation,
+                deadline = deadline,
+                dateOfChanges = dateOfChanges
             )
+
+            synchronized(copyItems) {
+                if (!copyItems.contains(item))
+                    copyItems.add(item)
+            }
         }
+    }
+
+    init {
+        copyList()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -55,7 +88,12 @@ class ItemAdapter(
         )
 
         holder.root.setOnClickListener {
-            onClick(items[holder.adapterPosition])
+            onClick(copyItems[holder.adapterPosition])
+        }
+
+        holder.root.setOnLongClickListener {
+            holder.itemMenu.show()
+            true
         }
 
         return holder
@@ -66,6 +104,7 @@ class ItemAdapter(
         val root: View
     ) : RecyclerView.ViewHolder(root) {
         private var binding = TodoItemBinding.bind(root)
+        lateinit var itemMenu: PopupMenu
 
 
         private fun getLess(text: String): String {
@@ -78,11 +117,7 @@ class ItemAdapter(
         fun bind(item: TodoItem) {
             with(binding) {
                 done.setOnClickListener {
-<<<<<<< Updated upstream:app/src/main/java/com/example/todoapp/ItemAdapter.kt
-                    repository.replaceItemDone(!item.done, item.id)
-=======
                     replaceItemDone(!item.done, item.id)
->>>>>>> Stashed changes:app/src/main/java/com/example/todoapp/adapters/ItemAdapter.kt
 
                     if (item.done) {
                         changeCount(-1)
@@ -95,13 +130,25 @@ class ItemAdapter(
                     item.done = !item.done
                 }
 
+                itemMenu = PopupMenu(context, body)
+                itemMenu.inflate(R.menu.item_menu)
+
+                itemMenu.setOnMenuItemClickListener {
+                    when (it.itemId) {
+                        R.id.task_menu_edit -> {
+                            onClick(item)
+                        }
+                    }
+                    true
+                }
+
                 if (item.done) {
                     done.setImageResource(R.drawable.done)
                     body.setTextColor(changeColor(R.attr.label_disable))
                     body.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
                     deadline.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
                 } else {
-                    if (item.importance == Importance.HIGH) {
+                    if (item.importance == Importance.important) {
                         done.setImageResource(R.drawable.undone_warning)
                     } else {
                         done.setImageResource(R.drawable.undone)
@@ -114,31 +161,39 @@ class ItemAdapter(
 
 
                 when (item.importance) {
-                    Importance.LOW -> {
+                    Importance.low -> {
                         importance.text = "↓"
                         importance.visibility = View.VISIBLE
                         importance.setTextColor(changeColor(R.attr.color_gray))
+                        deadline.setTextColor(changeColor(R.attr.label_tertiary))
                     }
 
-                    Importance.NORMAL -> {
+                    Importance.basic -> {
                         importance.visibility = View.GONE
+                        importance.text = ""
+                        deadline.setTextColor(changeColor(R.attr.label_tertiary))
                     }
 
-                    Importance.HIGH -> {
+                    Importance.important -> {
                         importance.visibility = View.VISIBLE
+                        importance.text = "!!"
+                        importance.setTextColor(changeColor(R.attr.color_red))
 
                         if (!item.done) {
                             done.setImageResource(R.drawable.undone_warning)
                             deadline.setTextColor(changeColor(R.attr.color_red))
+                        } else {
+                            deadline.setTextColor(changeColor(R.attr.label_tertiary))
                         }
 
                     }
                 }
 
                 body.text = getLess(item.text)
+                val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy 'г.'", Locale("ru"))
 
-                if (item.deadline != "") {
-                    deadline.text = item.deadline
+                if (item.deadline != null) {
+                    deadline.text = formatter.format(item.deadline)
                     deadline.visibility = View.VISIBLE
                 } else {
                     deadline.visibility = View.GONE
@@ -155,16 +210,21 @@ class ItemAdapter(
 
     override fun onItemDismiss(position: Int) {
         val item = copyItems[position]
-        repository.removeItem(item)
+        removeItem(item)
         val diffResult = DiffUtil.calculateDiff(callback)
         diffResult.dispatchUpdatesTo(adapter)
+        tryToDelete(item)
+
+        if (item.done)
+            changeCount(-1)
+
         copyItems.remove(item)
     }
 
     override fun onItemDone(position: Int) {
         val item = copyItems[position]
 
-        repository.replaceItemDone(!item.done, item.id)
+        replaceItemDone(!item.done, item.id)
 
         if (item.done) {
             changeCount(-1)
@@ -175,5 +235,6 @@ class ItemAdapter(
         val diffResult = DiffUtil.calculateDiff(callback)
         diffResult.dispatchUpdatesTo(adapter)
         item.done = !item.done
+        tryToChange(item)
     }
 }

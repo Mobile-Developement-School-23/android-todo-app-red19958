@@ -1,11 +1,11 @@
 package com.example.todoapp.data
 
-import android.util.Log
 import com.example.todoapp.fragments.util.Const.ZERO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.random.Random
 
 
 class TodoItemsRepository @Inject constructor(private val myDAO: TodoItemDAO) {
@@ -77,10 +77,7 @@ class TodoItemsRepository @Inject constructor(private val myDAO: TodoItemDAO) {
     }
 
     fun getLastId(): String {
-        return if (itemsList.size > 0)
-            (itemsList[itemsList.size - 1].id.toInt() + 1).toString()
-        else
-            ZERO
+        return Random.nextInt().toString()
     }
 
     suspend fun updateItem(item: TodoItem) {
@@ -126,5 +123,14 @@ class TodoItemsRepository @Inject constructor(private val myDAO: TodoItemDAO) {
 
     private suspend fun changeItemDoneInDAO(item: TodoItem) {
         myDAO.updateItem(item)
+    }
+
+    fun getItemById(id: String): TodoItem? {
+        val index = itemsList.indexOfFirst { it.id == id }
+
+        if (index == -1)
+            return null
+
+        return itemsList[index]
     }
 }

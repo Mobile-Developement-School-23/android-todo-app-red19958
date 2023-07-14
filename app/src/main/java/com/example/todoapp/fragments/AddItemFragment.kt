@@ -72,6 +72,7 @@ import com.example.todoapp.fragments.util.Const.DELETE
 import com.example.todoapp.fragments.util.Const.DELETE_BY_ID
 import com.example.todoapp.fragments.util.Const.ID
 import com.example.todoapp.fragments.util.Const.IMPORTANCE
+import com.example.todoapp.fragments.util.Const.IMPORTANCE_SAVE
 import com.example.todoapp.fragments.util.Const.NEW
 import com.example.todoapp.fragments.util.Const.NEW_DATE_OF_CHANGES
 import com.example.todoapp.fragments.util.Const.NEW_DEADLINE
@@ -79,15 +80,18 @@ import com.example.todoapp.fragments.util.Const.NEW_ID
 import com.example.todoapp.fragments.util.Const.NEW_IMPORTANCE
 import com.example.todoapp.fragments.util.Const.NEW_TEXT
 import com.example.todoapp.fragments.util.Const.TEXT
+import com.example.todoapp.fragments.util.Const.TEXT_SAVE
 import java.time.LocalDateTime
 import android.R as RR
 
 class AddItemFragment : Fragment() {
-    private var id: String = ""
-    private var text: String = ""
-    private var importance = 1
-    private var deadline: String? = null
-    private var new = false
+    private var idBundled: String = ""
+    private var textBundled: String = ""
+    private var importanceBundled = 1
+    private var deadlineBundled: String? = null
+    private var newBundled = false
+    private var textSave: String = ""
+    private var importanceSave = 1
     private lateinit var importances: Array<String>
     private var dateAndTime = Calendar.getInstance()
     private var _activity: Activity? = null
@@ -113,13 +117,15 @@ class AddItemFragment : Fragment() {
         importances = resources.getStringArray(R.array.importances)
 
         if (bundle != null) {
-            new = bundle.getBoolean(NEW)
+            newBundled = bundle.getBoolean(NEW)
 
-            if (!new) {
-                id = bundle.getString(ID)!!
-                text = bundle.getString(TEXT)!!
-                importance = bundle.getInt(IMPORTANCE)
-                deadline = bundle.getString(DEADLINE)
+            if (!newBundled) {
+                idBundled = bundle.getString(ID)!!
+                textBundled = bundle.getString(TEXT)!!
+                importanceBundled = bundle.getInt(IMPORTANCE)
+                deadlineBundled = bundle.getString(DEADLINE)
+                textSave = textBundled
+                importanceSave = importanceBundled
             }
         }
 
@@ -200,15 +206,16 @@ class AddItemFragment : Fragment() {
             val moreColors = localTheme.current
             val styles = localStyle.current
             val context = LocalContext.current
-            val editText = remember { mutableStateOf("") }
+            val editText = remember { mutableStateOf(textSave) }
             val expanded = remember { mutableStateOf(false) }
             val array = stringArrayResource(id = R.array.importances)
-            val title = remember { mutableStateOf(array[1]) }
+            val title = remember { mutableStateOf(array[importanceSave]) }
             val textColor = remember { mutableStateOf(moreColors.tertiaryTextColor) }
             val date = remember { mutableStateOf("") }
             val switchChecker = remember { mutableStateOf(false) }
             val isVisibleDate = remember { mutableStateOf(false) }
             val initial = remember { mutableStateOf(true) }
+
             val d = OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
                 dateAndTime[Calendar.YEAR] = year
                 dateAndTime[Calendar.MONTH] = monthOfYear
@@ -238,10 +245,10 @@ class AddItemFragment : Fragment() {
                 }
             }
 
-            if (!new && initial.value) {
-                editText.value = text
+            if (!newBundled && initial.value) {
+                editText.value = textSave
 
-                when (importance) {
+                when (importanceSave) {
                     0 -> {
                         title.value = array[0]
                         textColor.value = moreColors.tertiaryTextColor
@@ -259,9 +266,9 @@ class AddItemFragment : Fragment() {
 
                 }
 
-                if (deadline != null) {
+                if (deadlineBundled != null) {
                     isVisibleDate.value = true
-                    date.value = deadline!!
+                    date.value = deadlineBundled!!
                     switchChecker.value = true
                 }
 
@@ -298,7 +305,7 @@ class AddItemFragment : Fragment() {
                             modifier = Modifier
                                 .clickable {
                                     val newId =
-                                        if (id == "") todoItemsRepository.getLastId() else id
+                                        if (idBundled == "") todoItemsRepository.getLastId() else idBundled
                                     val newText = editText.value
                                     var newImportance = title.value
                                     val newDeadline = date.value
@@ -306,7 +313,7 @@ class AddItemFragment : Fragment() {
                                         .now()
                                         .toString()
 
-                                    if (newId != id || newText != text || newDeadline != deadline || importances[importance] != newImportance) {
+                                    if (newId != idBundled || newText != textBundled || newDeadline != deadlineBundled || importances[importanceBundled] != newImportance) {
                                         for (i in importances.indices)
                                             if (newImportance == importances[i]) {
                                                 newImportance = Importance.values()[i].toString()
@@ -319,7 +326,7 @@ class AddItemFragment : Fragment() {
                                         bundle.putString(NEW_DEADLINE, newDeadline)
                                         bundle.putString(NEW_DATE_OF_CHANGES, newDateOfChanges)
 
-                                        if (newId == id) {
+                                        if (newId == idBundled) {
                                             bundle.putInt(CHANGE, 1)
                                         } else {
                                             bundle.putInt(CHANGE, 2)
@@ -355,7 +362,10 @@ class AddItemFragment : Fragment() {
                         ) {
                             TextField(
                                 value = editText.value,
-                                onValueChange = { newText -> editText.value = newText },
+                                onValueChange = { newText ->
+                                    textSave = newText
+                                    editText.value = newText
+                                },
                                 modifier = Modifier
                                     .padding(16.dp)
                                     .background(MaterialTheme.colors.surface),
@@ -375,8 +385,6 @@ class AddItemFragment : Fragment() {
                                 )
                             )
                         }
-
-
 
                         Column(
                             modifier = Modifier
@@ -417,6 +425,7 @@ class AddItemFragment : Fragment() {
                                             title.value = array[0]
                                             expanded.value = !expanded.value
                                             textColor.value = moreColors.tertiaryTextColor
+                                            importanceSave = 0
                                         },
                                         style = styles.supportingStyle
                                     )
@@ -426,6 +435,7 @@ class AddItemFragment : Fragment() {
                                             title.value = array[1]
                                             expanded.value = !expanded.value
                                             textColor.value = moreColors.tertiaryTextColor
+                                            importanceSave = 1
                                         },
                                         style = styles.supportingStyle
                                     )
@@ -435,6 +445,7 @@ class AddItemFragment : Fragment() {
                                             title.value = array[2]
                                             expanded.value = !expanded.value
                                             textColor.value = moreColors.redColor
+                                            importanceSave = 2
                                         },
                                         style = styles.supportingStyle,
                                         color = moreColors.redColor
@@ -484,10 +495,10 @@ class AddItemFragment : Fragment() {
                         Row(modifier = Modifier
                             .padding(top = 30.dp, start = 10.dp, end = 10.dp)
                             .clickable {
-                                if (!new) {
+                                if (!newBundled) {
                                     val bundle = bundleOf()
                                     bundle.putBoolean(DELETE, true)
-                                    bundle.putString(DELETE_BY_ID, id)
+                                    bundle.putString(DELETE_BY_ID, idBundled)
                                     (activity as MainActivity).setBundle(bundle)
                                 }
 
@@ -527,15 +538,16 @@ class AddItemFragment : Fragment() {
             val moreColors = localTheme.current
             val styles = localStyle.current
             val context = LocalContext.current
-            val editText = remember { mutableStateOf("") }
+            val editText = remember { mutableStateOf(textSave) }
             val expanded = remember { mutableStateOf(false) }
             val array = stringArrayResource(id = R.array.importances)
-            val title = remember { mutableStateOf(array[1]) }
+            val title = remember { mutableStateOf(array[importanceSave]) }
             val textColor = remember { mutableStateOf(moreColors.tertiaryTextColor) }
             val date = remember { mutableStateOf("") }
             val switchChecker = remember { mutableStateOf(false) }
             val isVisibleDate = remember { mutableStateOf(false) }
             val initial = remember { mutableStateOf(true) }
+
             val d = OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
                 dateAndTime[Calendar.YEAR] = year
                 dateAndTime[Calendar.MONTH] = monthOfYear
@@ -565,10 +577,10 @@ class AddItemFragment : Fragment() {
                 }
             }
 
-            if (!new && initial.value) {
-                editText.value = text
+            if (!newBundled && initial.value) {
+                editText.value = textSave
 
-                when (importance) {
+                when (importanceSave) {
                     0 -> {
                         title.value = array[0]
                         textColor.value = moreColors.tertiaryTextColor
@@ -586,9 +598,9 @@ class AddItemFragment : Fragment() {
 
                 }
 
-                if (deadline != null) {
+                if (deadlineBundled != null) {
                     isVisibleDate.value = true
-                    date.value = deadline!!
+                    date.value = deadlineBundled!!
                     switchChecker.value = true
                 }
 
@@ -625,7 +637,7 @@ class AddItemFragment : Fragment() {
                             modifier = Modifier
                                 .clickable {
                                     val newId =
-                                        if (id == "") todoItemsRepository.getLastId() else id
+                                        if (idBundled == "") todoItemsRepository.getLastId() else idBundled
                                     val newText = editText.value
                                     var newImportance = title.value
                                     val newDeadline = date.value
@@ -633,7 +645,7 @@ class AddItemFragment : Fragment() {
                                         .now()
                                         .toString()
 
-                                    if (newId != id || newText != text || newDeadline != deadline || importances[importance] != newImportance) {
+                                    if (newId != idBundled || newText != textBundled || newDeadline != deadlineBundled || importances[importanceBundled] != newImportance) {
                                         for (i in importances.indices)
                                             if (newImportance == importances[i]) {
                                                 newImportance = Importance.values()[i].toString()
@@ -646,7 +658,7 @@ class AddItemFragment : Fragment() {
                                         bundle.putString(NEW_DEADLINE, newDeadline)
                                         bundle.putString(NEW_DATE_OF_CHANGES, newDateOfChanges)
 
-                                        if (newId == id) {
+                                        if (newId == idBundled) {
                                             bundle.putInt(CHANGE, 1)
                                         } else {
                                             bundle.putInt(CHANGE, 2)
@@ -682,7 +694,10 @@ class AddItemFragment : Fragment() {
                         ) {
                             TextField(
                                 value = editText.value,
-                                onValueChange = { newText -> editText.value = newText },
+                                onValueChange = { newText ->
+                                    textSave = newText
+                                    editText.value = newText
+                                },
                                 modifier = Modifier
                                     .padding(16.dp)
                                     .background(MaterialTheme.colors.surface),
@@ -702,8 +717,6 @@ class AddItemFragment : Fragment() {
                                 )
                             )
                         }
-
-
 
                         Column(
                             modifier = Modifier
@@ -744,6 +757,7 @@ class AddItemFragment : Fragment() {
                                             title.value = array[0]
                                             expanded.value = !expanded.value
                                             textColor.value = moreColors.tertiaryTextColor
+                                            importanceSave = 0
                                         },
                                         style = styles.supportingStyle
                                     )
@@ -753,6 +767,7 @@ class AddItemFragment : Fragment() {
                                             title.value = array[1]
                                             expanded.value = !expanded.value
                                             textColor.value = moreColors.tertiaryTextColor
+                                            importanceSave = 1
                                         },
                                         style = styles.supportingStyle
                                     )
@@ -762,6 +777,7 @@ class AddItemFragment : Fragment() {
                                             title.value = array[2]
                                             expanded.value = !expanded.value
                                             textColor.value = moreColors.redColor
+                                            importanceSave = 2
                                         },
                                         style = styles.supportingStyle,
                                         color = moreColors.redColor
@@ -811,10 +827,10 @@ class AddItemFragment : Fragment() {
                         Row(modifier = Modifier
                             .padding(top = 30.dp, start = 10.dp, end = 10.dp)
                             .clickable {
-                                if (!new) {
+                                if (!newBundled) {
                                     val bundle = bundleOf()
                                     bundle.putBoolean(DELETE, true)
-                                    bundle.putString(DELETE_BY_ID, id)
+                                    bundle.putString(DELETE_BY_ID, idBundled)
                                     (activity as MainActivity).setBundle(bundle)
                                 }
 
@@ -845,10 +861,12 @@ class AddItemFragment : Fragment() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(ID, id)
-        outState.putString(TEXT, text)
-        outState.putInt(IMPORTANCE, importance)
-        outState.putString(DEADLINE, deadline)
+        outState.putString(ID, idBundled)
+        outState.putString(TEXT, textBundled)
+        outState.putInt(IMPORTANCE, importanceBundled)
+        outState.putString(DEADLINE, deadlineBundled)
+        outState.putString(TEXT_SAVE, textSave)
+        outState.putInt(IMPORTANCE_SAVE, importanceSave)
         super.onSaveInstanceState(outState)
     }
 
@@ -856,10 +874,12 @@ class AddItemFragment : Fragment() {
         super.onViewStateRestored(savedInstanceState)
 
         if (savedInstanceState != null) {
-            id = savedInstanceState.getString(ID)!!
-            text = savedInstanceState.getString(TEXT)!!
-            importance = savedInstanceState.getInt(IMPORTANCE)
-            deadline = savedInstanceState.getString(DEADLINE)
+            idBundled = savedInstanceState.getString(ID)!!
+            textBundled = savedInstanceState.getString(TEXT)!!
+            importanceBundled = savedInstanceState.getInt(IMPORTANCE)
+            deadlineBundled = savedInstanceState.getString(DEADLINE)
+            textSave = savedInstanceState.getString(TEXT_SAVE)!!
+            importanceSave = savedInstanceState.getInt(IMPORTANCE_SAVE)
         }
     }
 

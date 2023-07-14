@@ -22,6 +22,9 @@
     <style name="big_based" parent="based">
         <item name="android:textSize">32sp</item>
     </style>
+    <style name="big_based.blue">
+        <item name="android:textColor">?attr/color_blue</item>
+    </style>
 
     <style name="supporting">
         <item name="android:textColor">?attr/label_tertiary</item>

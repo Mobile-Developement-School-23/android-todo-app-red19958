@@ -14,7 +14,6 @@ object Const {
     const val DEADLINE = "DEADLINE"
     const val DELETE = "DELETE"
     const val DELETE_BY_ID = "DELETE_BY_ID"
-    const val VISIBLE = "VISIBLE"
     const val ERROR_404 = 404
     const val ERROR_400 = 400
     const val ZERO = "0"
@@ -47,8 +46,11 @@ object Const {
     const val CHANNEL_ID = "CHANNEL_ID"
     const val CHANNEL_NAME = "DEADLINES CHANNEL"
     const val CHANNEL_DESCRIPTION = "DEADLINES"
-    const val ACTION_SCHEDULE_NOTIFICATION = "com.example.ACTION_SCHEDULE_NOTIFICATION"
-    const val ACTION_CANCEL_NOTIFICATION = "com.example.ACTION_CANCEL_NOTIFICATION"
     const val CHANGE_INTENT = "CHANGE INTENT"
     const val CREATE = "CREATE"
+    const val TIME_KEY = "TIME_KEY"
+    const val GET_NOTIFICATION = "GET_NOTIFICATION"
+    const val MY_PREFS = "MyPrefs"
+    const val TEXT_SAVE = "TEXT_SAVE"
+    const val IMPORTANCE_SAVE = "IMPORTANCE_SAVE"
 }

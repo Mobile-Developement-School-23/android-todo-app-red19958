@@ -16,12 +16,7 @@
         android:src="@drawable/cross"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-<<<<<<< Updated upstream
-        android:backgroundTint="?attr/label_primary"
-        />
-=======
         app:tint="?attr/label_primary" />
->>>>>>> Stashed changes
 
     <TextView
         android:id="@+id/save"
@@ -34,6 +29,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <androidx.cardview.widget.CardView
         android:id="@+id/card_view_edit_text"
         android:layout_width="match_parent"
@@ -41,8 +37,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="29dp"
         android:layout_marginEnd="16dp"
-        android:minHeight="150dp"
-        android:maxHeight="300dp"
         app:cardCornerRadius="10dp"
         app:cardElevation="6dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -57,24 +51,12 @@
             android:gravity="top"
             android:hint="@string/what_to_do"
             android:importantForAutofill="no"
-<<<<<<< Updated upstream
-            android:inputType="textMultiLine"
-            android:minHeight="150dp"
-            android:maxHeight="300dp"
-=======
->>>>>>> Stashed changes
             android:paddingStart="16dp"
             android:paddingTop="16dp"
             android:paddingEnd="16dp"
             android:paddingBottom="16dp"
-<<<<<<< Updated upstream
-            android:textColor="?attr/label_primary"
-            android:textSize="16sp"
-            android:textColorHint="?attr/label_tertiary"/>
-=======
             style="@style/based.edit"
             />
->>>>>>> Stashed changes
     </androidx.cardview.widget.CardView>
 
     <androidx.constraintlayout.widget.ConstraintLayout

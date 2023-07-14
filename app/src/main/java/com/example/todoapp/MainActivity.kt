@@ -8,13 +8,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-<<<<<<< Updated upstream
-import android.os.PersistableBundle
-import androidx.activity.viewModels
-=======
 import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
->>>>>>> Stashed changes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.todoapp.databinding.ActivityMainBinding
@@ -23,11 +18,13 @@ import com.example.todoapp.fragments.util.Const.CHANNEL_ID
 import com.example.todoapp.fragments.util.Const.CHANNEL_NAME
 import com.example.todoapp.fragments.util.Const.GROUP_ID
 import com.example.todoapp.fragments.util.Const.GROUP_NAME
+import com.example.todoapp.fragments.util.Const.MY_PREFS
 import com.example.todoapp.fragments.util.Const.NOTIFICATION_KEY
 import com.example.todoapp.fragments.util.Const.THEME_KEY
 
 
 class MainActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityMainBinding
     private var bundle: Bundle? = null
     private lateinit var sharedPref: SharedPreferences
@@ -35,12 +32,11 @@ class MainActivity : AppCompatActivity() {
     private var checkedNotification = false
     private lateinit var editor: SharedPreferences.Editor
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        sharedPref = applicationContext.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        sharedPref = applicationContext.getSharedPreferences(MY_PREFS, Context.MODE_PRIVATE)
         theme = sharedPref.getInt(THEME_KEY, 2)
         checkedNotification = sharedPref.getBoolean(NOTIFICATION_KEY, false)
         editor = sharedPref.edit()
@@ -51,6 +47,8 @@ class MainActivity : AppCompatActivity() {
             else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         }
 
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
         if (!checkedNotification) {
             checkNotificationPermission()
             checkedNotification = true
@@ -58,8 +56,9 @@ class MainActivity : AppCompatActivity() {
             editor.apply()
         }
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
         if (notificationManager.areNotificationsEnabled()) {
+
             notificationManager.createNotificationChannelGroup(
                 NotificationChannelGroup(
                     GROUP_ID,
@@ -83,8 +82,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-<<<<<<< Updated upstream
-=======
     private val notificationPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK)
@@ -101,7 +98,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
->>>>>>> Stashed changes
     fun getBundle(): Bundle? {
         return bundle
     }

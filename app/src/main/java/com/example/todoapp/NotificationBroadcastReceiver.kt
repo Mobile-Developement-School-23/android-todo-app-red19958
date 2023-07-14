@@ -38,7 +38,6 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
         text: String,
         importance: String
     ) {
-        Log.d("notify", "norm")
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         var importanceForNotify = ""
@@ -60,7 +59,6 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
     }
 
     private fun cancelNotification(context: Context, id: String) {
-        Log.d("cancel notify", "cancel")
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(id.toInt())

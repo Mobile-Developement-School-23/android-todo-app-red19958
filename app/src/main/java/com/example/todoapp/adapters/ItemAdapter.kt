@@ -15,6 +15,7 @@ import com.example.todoapp.data.Importance
 import com.example.todoapp.data.TodoItem
 import com.example.todoapp.data.TodoItemsRepository
 import com.example.todoapp.databinding.TodoItemBinding
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 import java.time.format.DateTimeFormatter
@@ -30,6 +31,7 @@ class ItemAdapter(
     private val changeItemDone: (TodoItem) -> Unit,
     private val removeItem: (TodoItem) -> Unit,
     private val repository: TodoItemsRepository,
+    private val showSnackbar: (TodoItem) -> Unit,
     private val onClick: (TodoItem) -> Unit
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>(), ItemTouchHelperAdapter {
     private val copyItems = arrayListOf<TodoItem>()
@@ -217,6 +219,7 @@ class ItemAdapter(
             changeCount(-1)
 
         copyItems.remove(item)
+        showSnackbar(item)
     }
 
     override fun onItemDone(position: Int) {

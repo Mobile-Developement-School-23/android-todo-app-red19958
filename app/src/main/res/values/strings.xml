@@ -25,8 +25,6 @@
     <string name="delete">Удалить</string>
     <string name="warn">!!</string>
     <string name="trash">trash</string>
-<<<<<<< Updated upstream
-=======
     <string name="edit">Изменить</string>
     <string name="successfully_removed">Удалено</string>
     <string name="undo">Отменить</string>
@@ -42,7 +40,9 @@
     <string name="expand">Развернут\n</string>
     <string name="collapse">Свернут\n</string>
     <string name="notification">Уведомление</string>
->>>>>>> Stashed changes
+    <string name="cancel">Отменить</string>
+    <string name="notification_time">Время уведомлений:</string>
+    <string name="midnight">00:00</string>
     <string-array name="importances">
         <item>Низкая</item>
         <item>Нет</item>

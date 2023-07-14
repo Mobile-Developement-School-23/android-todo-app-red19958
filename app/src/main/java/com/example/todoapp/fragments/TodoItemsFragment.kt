@@ -1,10 +1,14 @@
 package com.example.todoapp.fragments
 
+import android.app.NotificationManager
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,8 +35,10 @@ import com.example.todoapp.fragments.util.Const.DELETE
 import com.example.todoapp.fragments.util.Const.DELETE_BY_ID
 import com.example.todoapp.fragments.util.Const.ERROR_400
 import com.example.todoapp.fragments.util.Const.ERROR_404
+import com.example.todoapp.fragments.util.Const.GET_NOTIFICATION
 import com.example.todoapp.fragments.util.Const.ID
 import com.example.todoapp.fragments.util.Const.IMPORTANCE
+import com.example.todoapp.fragments.util.Const.MY_PREFS
 import com.example.todoapp.fragments.util.Const.NEW
 import com.example.todoapp.fragments.util.Const.NEW_DEADLINE
 import com.example.todoapp.fragments.util.Const.NEW_ID
@@ -52,6 +58,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
@@ -70,7 +77,7 @@ class TodoItemsFragment : Fragment() {
     private val countLock = Any()
 
     private lateinit var itemsList: List<TodoItem>
-
+    private lateinit var sharedPref: SharedPreferences
     private lateinit var apiService: APIService
     private lateinit var todoItemsRepository: TodoItemsRepository
 
@@ -94,6 +101,8 @@ class TodoItemsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        sharedPref =
+            requireActivity().application.getSharedPreferences(MY_PREFS, Context.MODE_PRIVATE)
         onInternetConnectionWorker.runWork(::tryToRefreshRepo)
 
         lifecycle.coroutineScope.launch {
@@ -104,11 +113,35 @@ class TodoItemsFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        checkNotification()
+    }
+
+    private fun checkNotification() {
+        val notificationManager =
+            requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (notificationManager.areNotificationsEnabled()
+            && !sharedPref.getBoolean(GET_NOTIFICATION, false)
+        ) {
+
+            sharedPref.edit().putBoolean(GET_NOTIFICATION, true).apply()
+
+            for (item in todoItemsRepository.get())
+                (requireActivity().application as MyApp).checkAndSetNotification(item)
+        } else if (!notificationManager.areNotificationsEnabled()
+            && sharedPref.getBoolean(GET_NOTIFICATION, false)
+        ) {
+
+            sharedPref.edit().putBoolean(GET_NOTIFICATION, false).apply()
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         onInternetConnectionWorker.stopWork()
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -202,15 +235,22 @@ class TodoItemsFragment : Fragment() {
 
             if (delete) {
                 val idToDelete = bundle.getString(DELETE_BY_ID)!!
+                deleteItem(idToDelete)
+                val item = todoItemsRepository.getItemById(idToDelete)
 
-                lifecycle.coroutineScope.launch {
-                    withContext(Dispatchers.IO) {
-                        val deleted = todoItemsRepository.delete(idToDelete)
-                        (requireActivity().application as MyApp).checkAndDeleteNotification(deleted)
-                        tryToUpdateRecycler()
-                        tryToDelete(deleted)
-                    }
-                }
+                if (item != null)
+                    showCancelSnackbar(item)
+            }
+        }
+    }
+
+    private fun deleteItem(idToDelete: String) {
+        lifecycle.coroutineScope.launch {
+            withContext(Dispatchers.IO) {
+                val deleted = todoItemsRepository.delete(idToDelete)
+                (requireActivity().application as MyApp).checkAndDeleteNotification(deleted)
+                tryToUpdateRecycler()
+                tryToDelete(deleted)
             }
         }
     }
@@ -280,7 +320,8 @@ class TodoItemsFragment : Fragment() {
                 ::tryToChange,
                 ::changeItemDone,
                 ::removeItem,
-                todoItemsRepository
+                todoItemsRepository,
+                ::showCancelSnackbar
             ) {
                 val bundle = bundleOf()
                 bundle.putString(ID, it.id)
@@ -469,8 +510,6 @@ class TodoItemsFragment : Fragment() {
                                     itemsList = todoItemsRepository.get()
 
                                     revision.set(list.revision.toString())
-                                    Log.d("1", list.list.toString())
-                                    Log.d("2", itemsList.toString())
 
                                     if (list.list != itemsList) {
                                         val listToUpdate =
@@ -858,10 +897,12 @@ class TodoItemsFragment : Fragment() {
             todoItemsRepository.changeItemDone(item)
         }
 
-        if (!item.done)
-            (requireActivity().application as MyApp).checkAndDeleteNotification(item)
-        else
-            (requireActivity().application as MyApp).checkAndSetNotification(item)
+        val newItem =  todoItemsRepository.getItemById(item.id)
+        if (newItem!!.done) {
+            (requireActivity().application as MyApp).checkAndDeleteNotification(newItem)
+        } else {
+            (requireActivity().application as MyApp).checkAndSetNotification(newItem)
+        }
     }
 
     private fun removeItem(item: TodoItem) {
@@ -905,6 +946,75 @@ class TodoItemsFragment : Fragment() {
         for (item in items) {
             if (item.done)
                 count++
+        }
+    }
+
+    private fun showCancelSnackbar(item: TodoItem) {
+        if (_binding != null) {
+            val text = if (item.text.length > 10) item.text.subSequence(0, 10)
+                .toString() + "…" else item.text
+
+            val snackbar = Snackbar.make(
+                binding.root,
+                getString(R.string.delete) + " " + text,
+                Snackbar.LENGTH_INDEFINITE
+            )
+
+            snackbar.animationMode = Snackbar.ANIMATION_MODE_SLIDE
+            val duration = 5000
+            val tickInterval = 1000L
+
+            val tickJob = lifecycle.coroutineScope.launch {
+                var counter = duration / tickInterval
+
+                while (counter > 0) {
+                    val spannableText = SpannableStringBuilder()
+                    spannableText.append(getString(R.string.delete))
+                    spannableText.append(" ")
+                    spannableText.append(text)
+                    spannableText.append(" ")
+                    spannableText.append(counter.toString())
+
+                    val typedArray =
+                        requireContext().obtainStyledAttributes(intArrayOf(R.attr.color_blue))
+                    val color = typedArray.getColor(0, 0)
+                    typedArray.recycle()
+
+                    val counterStart = spannableText.length - counter.toString().length
+                    val counterEnd = spannableText.length
+                    spannableText.setSpan(
+                        ForegroundColorSpan(color),
+                        counterStart,
+                        counterEnd,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                    snackbar.setText(spannableText)
+                    delay(tickInterval)
+                    counter--
+                }
+
+                snackbar.dismiss()
+            }
+
+            snackbar.setAction(getString(R.string.cancel)) {
+                tickJob.cancel()
+                (requireActivity().application as MyApp).checkAndSetNotification(item)
+
+                lifecycle.coroutineScope.launch {
+                    withContext(Dispatchers.IO) {
+                        todoItemsRepository.add(item)
+                        tryToUpdateRecycler()
+                    }
+                }
+
+                if (item.done)
+                    changeCounter(1)
+
+                tryToAdd(item)
+            }
+
+            snackbar.duration = duration
+            snackbar.show()
         }
     }
 }

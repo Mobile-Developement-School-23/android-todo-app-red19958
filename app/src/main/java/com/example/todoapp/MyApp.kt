@@ -2,11 +2,13 @@ package com.example.todoapp
 
 import android.app.AlarmManager
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationChannelGroup
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.util.Log
+import android.content.SharedPreferences
 import androidx.work.Configuration
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -14,6 +16,7 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.example.todoapp.data.TodoItem
+import com.example.todoapp.fragments.util.Const
 import com.example.todoapp.fragments.util.Const.BACKGROUND_WORKER
 import com.example.todoapp.fragments.util.Const.CHANGE_INTENT
 import com.example.todoapp.fragments.util.Const.CREATE
@@ -23,6 +26,7 @@ import com.example.todoapp.fragments.util.Const.IMPORTANCE
 import com.example.todoapp.fragments.util.Const.REPEAT_TIME
 import com.example.todoapp.fragments.util.Const.RU
 import com.example.todoapp.fragments.util.Const.TEXT
+import com.example.todoapp.fragments.util.Const.TIME_KEY
 import com.example.todoapp.ioc.components.AppComponent
 import com.example.todoapp.ioc.components.DaggerAppComponent
 import com.example.todoapp.ioc.modules.AppModule
@@ -40,6 +44,8 @@ class MyApp : Application() {
 
     @Inject
     lateinit var workerFactory: SynchronizedWorkerFactory
+
+    private lateinit var sharedPref: SharedPreferences
 
     private fun setAppLocale(context: Context, locale: Locale) {
         val configuration = context.resources.configuration
@@ -83,16 +89,38 @@ class MyApp : Application() {
     }
 
     fun checkAndSetNotification(item: TodoItem) {
-        Log.d("set", "set")
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        if (notificationManager.areNotificationsEnabled())
-            if (item.deadline != null)
+
+        if (notificationManager.areNotificationsEnabled()) {
+            notificationManager.createNotificationChannelGroup(
+                NotificationChannelGroup(
+                    Const.GROUP_ID,
+                    Const.GROUP_NAME
+                )
+            )
+
+            val channel = NotificationChannel(
+                Const.CHANNEL_ID,
+                Const.CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_HIGH
+            )
+
+            channel.apply {
+                description = Const.CHANNEL_DESCRIPTION
+                enableVibration(true)
+                group = Const.GROUP_ID
+            }
+
+            notificationManager.createNotificationChannel(channel)
+
+            if (item.deadline != null && !item.done)
                 setNotification(item)
+        }
+
     }
 
     private fun setNotification(item: TodoItem) {
-        Log.d("go", "go")
         val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
         val intent = Intent(this, NotificationBroadcastReceiver::class.java)
         intent.putExtra(CHANGE_INTENT, CREATE)
@@ -109,18 +137,36 @@ class MyApp : Application() {
 
         alarmManager.cancel(pendingIntent)
         val calendar: Calendar = Calendar.getInstance()
+        sharedPref = applicationContext.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+
+        val time = sharedPref.getString(TIME_KEY, getString(R.string.midnight))
+        val parts = time!!.split(':')
+
+        val hour = if (parts[0][0] != '0') {
+            parts[0].toInt()
+        } else {
+            parts[0][1].code - '0'.code
+        }
+
+        val minute = if (parts[1][0] != '0') {
+            parts[1].toInt()
+        } else {
+            parts[1][1].code - '0'.code
+        }
+
         calendar.timeInMillis = System.currentTimeMillis()
         calendar.set(Calendar.YEAR, item.deadline!!.year)
         calendar.set(Calendar.MONTH, item.deadline!!.monthValue - 1)
         calendar.set(Calendar.DAY_OF_MONTH, item.deadline!!.dayOfMonth)
-        calendar.set(Calendar.HOUR_OF_DAY, 0)
-        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.HOUR_OF_DAY, hour)
+        calendar.set(Calendar.MINUTE, minute)
         calendar.set(Calendar.SECOND, 0)
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
     }
 
     fun checkAndDeleteNotification(item: TodoItem) {
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (notificationManager.areNotificationsEnabled())
             deleteNotification(item)
     }
@@ -138,6 +184,5 @@ class MyApp : Application() {
         )
 
         alarmManager.cancel(pendingIntent)
-        Log.d("cancel", "cancel")
     }
 }

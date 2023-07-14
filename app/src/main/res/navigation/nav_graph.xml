@@ -13,7 +13,20 @@
 
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            app:destination="@id/SecondFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popEnterAnim="@anim/from_left"
+            app:popExitAnim="@anim/to_right"/>
+
+        <action
+            android:id="@+id/action_FirstFragment_to_ThirdFragment"
+            app:destination="@id/ThirdFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+            app:popEnterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_left"
+            />
     </fragment>
 
     <fragment
@@ -21,9 +34,12 @@
         android:name="com.example.todoapp.AddItemFragment"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/add_item_fragment">
+    </fragment>
 
-        <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+    <fragment
+        android:id="@+id/ThirdFragment"
+        android:name="com.example.todoapp.fragments.SettingsFragment"
+        android:label="@string/third_fragment_label"
+        tools:layout="@layout/settings_fragment">
     </fragment>
 </navigation>

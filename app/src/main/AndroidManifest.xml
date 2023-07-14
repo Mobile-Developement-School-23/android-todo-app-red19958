@@ -2,6 +2,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+<<<<<<< Updated upstream
+=======
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+>>>>>>> Stashed changes
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,10 +24,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ToDoApp"
         tools:targetApi="31">
+<<<<<<< Updated upstream
+=======
+
+        <receiver android:name=".NotificationBroadcastReceiver"
+            android:exported="true"
+            android:permission="android.permission.POST_NOTIFICATIONS">
+        </receiver>
+
+>>>>>>> Stashed changes
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.ToDoApp.NoActionBar">
+            android:theme="@style/Theme.ToDoApp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,4 +1,4 @@
-package com.example.todoapp
+package com.example.todoapp.adapters.util
 
 interface ItemTouchHelperAdapter {
     fun onItemDismiss(position: Int)

@@ -3,13 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="6dp"
     app:cardCornerRadius="10dp"
-    app:cardElevation="6dp">
+    app:cardElevation="6dp"
+    android:layout_marginTop="6dp"
+    android:layout_marginBottom="6dp"
+    android:backgroundTint="?attr/back_secondary">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:minHeight="50dp"
+        android:id="@+id/clickable_item">
 
         <ImageView
             android:id="@+id/done"
@@ -22,20 +26,19 @@
             android:src="@drawable/undone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:foreground="?attr/selectableItemBackground"/>
 
         <TextView
             android:id="@+id/importance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
+            android:layout_marginStart="20dp"
             android:contentDescription="@string/importance"
             android:text="@string/warn"
-            android:textColor="?attr/color_red"
-            android:textSize="18sp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@id/deadline"
-            app:layout_constraintEnd_toStartOf="@id/body"
+            style="@style/alert"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/done"
             app:layout_constraintTop_toTopOf="parent"
             />
 
@@ -44,10 +47,7 @@
             android:id="@+id/body"
             android:layout_width="240dp"
             android:layout_height="wrap_content"
-            android:breakStrategy="balanced"
-            android:hyphenationFrequency="full"
-            android:textColor="?attr/label_primary"
-            android:textSize="16sp"
+            style="@style/based"
             app:layout_constraintBottom_toTopOf="@id/deadline"
             app:layout_constraintEnd_toStartOf="@id/info"
             app:layout_constraintStart_toEndOf="@id/done"
@@ -57,11 +57,10 @@
             android:id="@+id/deadline"
             android:layout_width="240dp"
             android:layout_height="wrap_content"
-            android:textColor="?attr/label_tertiary"
-            android:textSize="14sp"
+            style="@style/small_supporting"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@id/importance"
+            app:layout_constraintStart_toStartOf="@id/body"
             app:layout_constraintTop_toBottomOf="@id/body" />
 
         <ImageView

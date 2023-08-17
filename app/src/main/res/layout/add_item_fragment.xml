@@ -16,8 +16,7 @@
         android:src="@drawable/cross"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:backgroundTint="?attr/label_primary"
-        />
+        app:tint="?attr/label_primary" />
 
     <TextView
         android:id="@+id/save"
@@ -26,11 +25,10 @@
         android:layout_marginTop="15dp"
         android:layout_marginEnd="10dp"
         android:text="@string/save"
-        android:textColor="?attr/color_blue"
-        android:textSize="14sp"
-        android:textStyle="bold"
+        style="@style/save_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 
     <androidx.cardview.widget.CardView
         android:id="@+id/card_view_edit_text"
@@ -39,8 +37,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="29dp"
         android:layout_marginEnd="16dp"
-        android:minHeight="150dp"
-        android:maxHeight="300dp"
         app:cardCornerRadius="10dp"
         app:cardElevation="6dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -55,16 +51,12 @@
             android:gravity="top"
             android:hint="@string/what_to_do"
             android:importantForAutofill="no"
-            android:inputType="textMultiLine"
-            android:minHeight="150dp"
-            android:maxHeight="300dp"
             android:paddingStart="16dp"
             android:paddingTop="16dp"
             android:paddingEnd="16dp"
             android:paddingBottom="16dp"
-            android:textColor="?attr/label_primary"
-            android:textSize="16sp"
-            android:textColorHint="?attr/label_tertiary"/>
+            style="@style/based.edit"
+            />
     </androidx.cardview.widget.CardView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -83,8 +75,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/importance"
-            android:textColor="?attr/label_primary"
-            android:textSize="16sp"
+            style="@style/based"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -114,8 +105,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/make_up"
-            android:textColor="?attr/label_primary"
-            android:textSize="16sp"
+            style="@style/based"
             app:layout_constraintBottom_toTopOf="@id/date"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -125,8 +115,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=""
-            android:textColor="?attr/color_blue"
-            android:textSize="14sp"
+            style="@style/small_supporting.blue"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -160,8 +149,8 @@
         android:layout_marginStart="17dp"
         android:layout_marginTop="30dp"
         android:text="@string/delete"
-        android:textColor="?attr/label_disable"
-        android:textSize="16sp"
+        android:foreground="?attr/selectableItemBackground"
+        style="@style/based"
         app:layout_constraintBottom_toBottomOf="@id/trash"
         app:layout_constraintStart_toEndOf="@id/trash"
         app:layout_constraintTop_toBottomOf="@id/date_picker" />

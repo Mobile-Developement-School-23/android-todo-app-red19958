@@ -16,8 +16,7 @@
         android:src="@drawable/cross"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:backgroundTint="?attr/label_primary"
-        />
+        app:tint="?attr/label_primary" />
 
     <TextView
         android:id="@+id/save"
